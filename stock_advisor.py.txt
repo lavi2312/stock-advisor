@@ -1,0 +1,20 @@
+import google.generativeai as genai
+
+def analyze_with_claude(price_data):   # same function name, just different internals
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+    model = genai.GenerativeModel("gemini-1.5-flash")  # free tier model
+
+    data_block = json.dumps(price_data, indent=2)
+    today = datetime.now().strftime("%B %d, %Y")
+
+    prompt = f"""You are a concise stock market analyst. Today is {today}.
+... (same prompt as before) ..."""
+
+    response = model.generate_content(prompt)
+    raw = response.text.strip()
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        print(f"  [!] Gemini returned non-JSON:\n{raw}")
+        return []
