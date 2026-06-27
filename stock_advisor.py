@@ -1,0 +1,30 @@
+name: Stock Advisor
+
+on:
+  schedule:
+    - cron: "*/5 13-20 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  run-advisor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install yfinance google-generativeai
+
+      - name: Run stock advisor
+        env:
+          GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_USER:         ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALERT_EMAIL:        ${{ secrets.ALERT_EMAIL }}
+        run: python stock_advisor.py
